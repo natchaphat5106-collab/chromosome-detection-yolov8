@@ -1,0 +1,54 @@
+# === Python ===
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+
+# === Data (ใหญ่เกินไป) ===
+data/
+backups/
+runs/
+
+# === Base Models (65MB) ===
+yolov8n.pt
+yolov8s.pt
+yolov8m.pt
+yolov8l.pt
+yolov8x.pt
+yolo11n.pt
+yolo11s.pt
+
+# === Third-party ===
+YOLOv4-pytorch/
+chromosome_abnormality_detector/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# === IDE ===
+.vscode/
+.idea/
+
+# === Logs ===
+*.log
+train_log.txt
+
+# === Test outputs ===
+test_result.jpg
+*.tmp
+
+# === Cache ===
+*.cache
+.cache/

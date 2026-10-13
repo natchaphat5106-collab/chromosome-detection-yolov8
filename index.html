@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧬 BIOCHROM NEO | Chromosome Analysis System</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* ========== GLOBAL STYLES - BIOTECH NEO ========== */
+        :root {
+            --primary: #00ff9d;
+            --primary-dark: #00cc7d;
+            --secondary: #00f0ff;
+            --accent: #ff6b4a;
+            --warning: #ffd166;
+            --dark: #0a0f1e;
+            --darker: #05080f;
+            --glass: rgba(10, 20, 30, 0.8);
+            --glass-border: rgba(0, 255, 157, 0.3);
+            --neon-shadow: 0 0 20px rgba(0, 255, 157, 0.3);
+            --grid-color: rgba(0, 255, 157, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--darker);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ========== CYBER GRID BACKGROUND ========== */
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ========== ANIMATED DNA BACKGROUND ========== */
+        .dna-helix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        .dna-strand {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary), var(--secondary), var(--primary));
+            left: 50%;
+            transform: translateX(-50%);
+            animation: dnaPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes dnaPulse {
+            0%, 100% { opacity: 0.3; transform: translateX(-50%) scaleY(1); }
+            50% { opacity: 0.6; transform: translateX(-50%) scaleY(1.1); }
+        }
+
+        /* ========== NEON TEXT EFFECT ========== */
+        .neon-text {
+            color: #fff;
+            text-shadow: 
+                0 0 10px var(--primary),
+                0 0 20px var(--primary),
+                0 0 40px var(--primary);
+        }
+
+        /* ========== GLASS MORPHISM ========== */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 255, 157, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 30px;
+            border: 1px solid transparent;
+            background: linear-gradient(45deg, var(--primary), var(--secondary)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+        }
+
+        /* ========== SCANNER UPLOAD AREA ========== */
+        .scanner-area {
+            border: 2px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 80px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 255, 157, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scanner-area::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+            border-radius: 40px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: -1;
+        }
+
+        .scanner-area:hover::before {
+            opacity: 0.3;
+        }
+
+        .scanner-area:hover {
+            border-color: transparent;
+            transform: translateY(-5px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+
+        .scanner-icon {
+            font-size: 80px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px var(--primary));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* ========== BIO-HUD ELEMENTS ========== */
+        .bio-hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .hud-element {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 10px 20px;
+            color: var(--primary);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 14px;
+            letter-spacing: 2px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+        }
+
+        /* ========== QUANTUM METER ========== */
+        .quantum-meter {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 255, 157, 0.1);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quantum-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .quantum-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shine 2s infinite;
+        }
+
+        /* ========== CHROMOSOME CARD ========== */
+        .chromosome-card {
+            background: rgba(0, 20, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chromosome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .chromosome-card:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+            box-shadow: -10px 0 30px rgba(0, 255, 157, 0.2);
+        }
+
+        /* ========== DIAGNOSIS RESULT CARD ========== */
+        .diagnosis-card {
+            background: linear-gradient(135deg, rgba(0,40,60,0.8), rgba(0,20,40,0.9));
+            backdrop-filter: blur(20px);
+            border: 1px solid;
+            border-radius: 30px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnosis-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,255,157,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== PROBABILITY GRAPH ========== */
+        .prob-bar {
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .prob-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        /* ========== LOADER ========== */
+        .bio-loader {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .bio-loader div {
+            position: absolute;
+            top: 33px;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .bio-loader div:nth-child(1) {
+            left: 8px;
+            animation: loader1 0.6s infinite;
+        }
+
+        .bio-loader div:nth-child(2) {
+            left: 8px;
+            animation: loader2 0.6s infinite;
+        }
+
+        .bio-loader div:nth-child(3) {
+            left: 32px;
+            animation: loader2 0.6s infinite;
+        }
+
+        .bio-loader div:nth-child(4) {
+            left: 56px;
+            animation: loader3 0.6s infinite;
+        }
+
+        @keyframes loader1 {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes loader2 {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(24px, 0); }
+        }
+
+        @keyframes loader3 {
+            0% { transform: scale(1); }
+            100% { transform: scale(0); }
+        }
+
+        /* ========== BUTTON STYLES ========== */
+        .btn-neo {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-neo:hover {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 30px var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-neo-outline {
+            background: transparent;
+            border: 1px solid rgba(0,255,157,0.3);
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-neo-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 20px rgba(0,255,157,0.2);
+        }
+
+        /* ========== TYPOGRAPHY ========== */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+        }
+
+        .glitch {
+            position: relative;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch::before {
+            animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            color: var(--secondary);
+            z-index: -1;
+        }
+
+        .glitch::after {
+            animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+            color: var(--accent);
+            z-index: -2;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 25px;
+            }
+            
+            .scanner-area {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        /* ========== SCROLLBAR ========== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 0 20px var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cyber Grid Background -->
+    <div class="cyber-grid"></div>
+    
+    <!-- DNA Helix Animation -->
+    <div class="dna-helix">
+        <div class="dna-strand" style="left: 30%;"></div>
+        <div class="dna-strand" style="left: 50%; animation-delay: -2s;"></div>
+        <div class="dna-strand" style="left: 70%; animation-delay: -1s;"></div>
+    </div>
+
+    <!-- Bio HUD -->
+    <div class="bio-hud">
+        <div class="hud-element">
+            <i class="fas fa-microchip me-2"></i> BIOCHROM NEO v2.0
+        </div>
+        <div class="hud-element">
+            <i class="fas fa-shield-alt me-2"></i> QUANTUM ENCRYPTED
+        </div>
+    </div>
+
+    <div class="container py-5" style="position: relative; z-index: 20;">
+        <!-- Header -->
+        <div class="glass-panel p-5 mb-5 text-center">
+            <div class="position-relative">
+                <span class="hud-element d-inline-block mb-4">
+                    <i class="fas fa-dna me-2"></i> SEQUENCE ANALYSIS
+                </span>
+                
+                <h1 class="display-2 fw-bold mb-3 glitch" data-text="🧬 BIOCHROM">
+                    <span style="color: var(--primary);">🧬 BIO</span><span style="color: var(--secondary);">CHROM</span>
+                </h1>
+                
+                <p class="fs-4 mb-4" style="color: rgba(255,255,255,0.8);">
+                    <span style="border-bottom: 2px solid var(--primary); padding-bottom: 5px;">
+                        Chromosome Abnormality Detection System
+                    </span>
+                </p>
+                
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <span class="hud-element">
+                        <i class="fas fa-check-circle me-2" style="color: var(--primary);"></i> QUANTUM READY
+                    </span>
+                    <span class="hud-element">
+                        <i class="fas fa-robot me-2" style="color: var(--secondary);"></i> AI CORE v3.0
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scanner Section -->
+        <div class="glass-panel p-5 mb-5">
+            <div class="scanner-area" id="uploadArea">
+                <div class="scan-line"></div>
+                <i class="fas fa-dna scanner-icon"></i>
+                <h2 class="display-6 fw-bold mb-3" style="color: #fff;">
+                    INITIATE BIO-SCAN
+                </h2>
+                <p class="fs-5 mb-4" style="color: rgba(255,255,255,0.7);">
+                    <i class="fas fa-cloud-upload-alt me-2" style="color: var(--primary);"></i>
+                    Drop chromosome image or click to analyze
+                </p>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                <button class="btn-neo btn-lg" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-search me-2"></i> START SCAN
+                </button>
+                <p class="mt-3 small" style="color: rgba(255,255,255,0.5);">
+                    <i class="fas fa-shield-alt me-1"></i> Supported: JPG, PNG, BMP | Max: 16MB
+                </p>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" style="display: none;">
+            <div class="glass-panel p-5">
+                <div class="row g-5">
+                    <!-- Preview Column -->
+                    <div class="col-lg-6">
+                        <div class="position-relative">
+                            <div class="hud-element mb-3">
+                                <i class="fas fa-camera me-2"></i> RAW SCAN DATA
+                            </div>
+                            <div style="border-radius: 20px; overflow: hidden; border: 2px solid var(--glass-border);">
+                                <img id="previewImage" class="img-fluid" alt="Bio-scan preview">
+                            </div>
+                            <div id="fileName" class="mt-3 text-center" style="color: var(--primary); font-family: 'Space Grotesk';">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Column -->
+                    <div class="col-lg-6">
+                        <div id="loadingSection" style="display: none;">
+                            <div class="text-center py-5">
+                                <div class="bio-loader">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                                <h4 class="mt-4" style="color: var(--primary);">SEQUENCING DNA</h4>
+                                <p style="color: rgba(255,255,255,0.6);">Analyzing chromosome patterns...</p>
+                                <div class="quantum-meter mt-4" style="width: 80%; margin: 0 auto;">
+                                    <div class="quantum-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-5" style="color: rgba(255,255,255,0.5);">
+            <p class="fs-6">
+                <i class="fas fa-dna me-2" style="color: var(--primary);"></i>
+                BIOCHROM NEO · ADVANCED CYTOGENETICS AI
+            </p>
+            <p class="small">
+                <i class="fas fa-shield-alt me-1"></i> CLASS III MEDICAL DEVICE · RESEARCH USE ONLY
+                <span class="mx-2">|</span>
+                <i class="fas fa-atom me-1"></i> QUANTUM AI CORE v3.0
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const resultSection = document.getElementById('resultSection');
+        const previewImage = document.getElementById('previewImage');
+        const fileName = document.getElementById('fileName');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultContent = document.getElementById('resultContent');
+
+        // Event Listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary)';
+            uploadArea.style.background = 'rgba(0, 255, 157, 0.05)';
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--glass-border)';
+            uploadArea.style.background = 'rgba(0, 255, 157, 0.03)';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--glass-border)';
+            uploadArea.style.background = 'rgba(0, 255, 157, 0.03)';
+            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file.type.match('image.*')) {
+                showNotification('Invalid file format. Please upload an image.', 'error');
+                return;
+            }
+            
+            if (file.size > 16 * 1024 * 1024) {
+                showNotification('File size exceeds 16MB limit', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                fileName.innerHTML = `<i class="fas fa-file-image me-2"></i>${file.name}`;
+                resultSection.style.display = 'block';
+                loadingSection.style.display = 'block';
+                resultContent.innerHTML = '';
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadingSection.style.display = 'none';
+                    
+                    if (data.success) {
+                        displayResults(data);
+                        if (data.image_with_boxes) {
+                            previewImage.src = data.image_with_boxes;
+                        }
+                    } else {
+                        showError(data.error || 'Analysis failed');
+                    }
+                })
+                .catch(error => {
+                    loadingSection.style.display = 'none';
+                    showError('Connection lost. Retrying...');
+                    console.error(error);
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayResults(data) {
+            let html = '<div style="color: #fff;">';
+            
+            // Chromosome Count Analysis
+            if (data.analysis && data.analysis.chromosome_count) {
+                const count = data.analysis.chromosome_count;
+                let statusColor = count.status === 'DIPLOID' ? '#00ff9d' : '#ff6b4a';
+                
+                html += `<div class="chromosome-card">
+                    <div class="d-flex align-items-center">
+                        <div style="width: 50px; height: 50px; background: rgba(0,255,157,0.1); border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
+                            <i class="fas fa-dna fa-2x" style="color: ${statusColor};"></i>
+                        </div>
+                        <div>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 12px; letter-spacing: 2px;">CHROMOSOME COUNT</div>
+                            <div style="display: flex; align-items: baseline; gap: 15px;">
+                                <span style="font-size: 48px; font-weight: 700; color: ${statusColor};">${count.count}</span>
+                                <span style="background: ${statusColor}20; color: ${statusColor}; padding: 5px 15px; border-radius: 50px; font-size: 14px;">
+                                    ${count.status}
+                                </span>
+                            </div>
+                            <div style="color: rgba(255,255,255,0.7); margin-top: 5px;">
+                                ${count.message}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            
+            // Diagnosis Result
+            if (data.disease_info) {
+                const d = data.disease_info;
+                const p = data.prediction;
+                
+                html += `<div class="diagnosis-card mt-4" style="border-color: ${d.color};">
+                    <div class="position-relative" style="z-index: 10;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div style="color: ${d.color}; font-size: 14px; letter-spacing: 3px; margin-bottom: 10px;">
+                                    <i class="fas ${d.icon} me-2"></i>DIAGNOSIS RESULT
+                                </div>
+                                <h2 style="color: ${d.color}; font-size: 28px; margin-bottom: 15px;">
+                                    ${d.name}
+                                </h2>
+                                <p style="color: rgba(255,255,255,0.8); font-size: 16px;">
+                                    ${d.description}
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <div style="background: ${d.color}20; border: 1px solid ${d.color}; border-radius: 50px; padding: 10px 25px;">
+                                    <span style="color: ${d.color}; font-size: 20px; font-weight: 700;">
+                                        ${p.confidence_percentage}
+                                    </span>
+                                    <span style="color: rgba(255,255,255,0.6); font-size: 12px; display: block;">
+                                        CONFIDENCE
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quantum-meter mt-4">
+                            <div class="quantum-fill" style="width: ${p.confidence_percentage}; background: linear-gradient(90deg, ${d.color}, ${d.color}dd);"></div>
+                        </div>
+                        
+                        <div style="background: rgba(0,0,0,0.3); border-radius: 15px; padding: 20px; margin-top: 25px; border-left: 4px solid ${d.color};">
+                            <i class="fas fa-stethoscope me-2" style="color: ${d.color};"></i>
+                            <strong style="color: #fff;">CLINICAL RECOMMENDATION:</strong>
+                            <span style="color: rgba(255,255,255,0.8); display: block; margin-top: 8px;">
+                                ${d.recommendation}
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            
+            // Probability Matrix
+            if (data.all_probabilities && data.all_probabilities.length > 0) {
+                html += `<div style="margin-top: 30px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                        <i class="fas fa-chart-line" style="color: var(--primary);"></i>
+                        <h4 style="color: #fff; margin: 0;">PROBABILITY MATRIX</h4>
+                    </div>`;
+                
+                data.all_probabilities.forEach(prob => {
+                    let color = '#00ff9d';
+                    if (prob.class === 'Numerical_Abnormality') color = '#ff6b4a';
+                    if (prob.class === 'Structural_Abnormality') color = '#ffd166';
+                    
+                    html += `<div style="margin-bottom: 15px;">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span style="color: #fff;">${prob.display_name || prob.class}</span>
+                            <span style="color: ${color}; font-weight: 600;">${prob.percentage}</span>
+                        </div>
+                        <div class="prob-bar">
+                            <div class="prob-fill" style="width: ${prob.percentage}; background: ${color};"></div>
+                        </div>
+                    </div>`;
+                });
+                
+                html += `</div>`;
+            }
+            
+            // Action Buttons
+            html += `<hr style="border-color: rgba(255,255,255,0.1); margin: 30px 0;">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <button class="btn-neo-outline w-100 py-3" onclick="downloadReport()">
+                            <i class="fas fa-download me-2"></i> EXPORT DATA
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn-neo w-100 py-3" onclick="location.reload()">
+                            <i class="fas fa-redo-alt me-2"></i> NEW SCAN
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+            
+            resultContent.innerHTML = html;
+            window.lastResult = data;
+        }
+
+        function showError(message) {
+            resultContent.innerHTML = `<div class="text-center p-5">
+                <i class="fas fa-exclamation-triangle fa-4x mb-4" style="color: #ff6b4a;"></i>
+                <h4 style="color: #fff; margin-bottom: 15px;">SCAN FAILED</h4>
+                <p style="color: rgba(255,255,255,0.6); margin-bottom: 25px;">${message}</p>
+                <button class="btn-neo" onclick="location.reload()">
+                    <i class="fas fa-redo-alt me-2"></i> RETRY
+                </button>
+            </div>`;
+        }
+
+        function showNotification(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0,0,0,0.9);
+                border: 1px solid ${type === 'error' ? '#ff6b4a' : 'var(--primary)'};
+                border-radius: 10px;
+                padding: 15px 25px;
+                color: #fff;
+                font-family: 'Space Grotesk';
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} me-2" style="color: ${type === 'error' ? '#ff6b4a' : 'var(--primary)'};"></i>${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function downloadReport() {
+            if (!window.lastResult) return;
+            
+            const data = window.lastResult;
+            const date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+            
+            let report = '🧬 BIOCHROM NEO ANALYSIS REPORT
+';
+            report += '='.repeat(60) + '
+';
+            report += `TIMESTAMP: ${date}
+`;
+            report += `SYSTEM: QUANTUM AI CORE v3.0
+`;
+            report += '='.repeat(60) + '
+
+';
+            
+            if (data.analysis && data.analysis.chromosome_count) {
+                const count = data.analysis.chromosome_count;
+                report += '[CHROMOSOME COUNT]
+';
+                report += `COUNT: ${count.count}
+`;
+                report += `STATUS: ${count.status}
+`;
+                report += `DETAILS: ${count.message}
+
+`;
+            }
+            
+            if (data.disease_info) {
+                report += '[DIAGNOSIS]
+';
+                report += `CLASSIFICATION: ${data.disease_info.name}
+`;
+                report += `CONFIDENCE: ${data.prediction.confidence_percentage}
+`;
+                report += `DESCRIPTION: ${data.disease_info.description}
+`;
+                report += `RECOMMENDATION: ${data.disease_info.recommendation}
+
+`;
+            }
+            
+            report += '='.repeat(60) + '
+';
+            report += 'BIOCHROM NEO · ADVANCED CYTOGENETICS AI
+';
+            report += 'CLASS III MEDICAL DEVICE · RESEARCH USE ONLY
+';
+            
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `biochrom_scan_${Date.now()}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
