@@ -52,3 +52,9 @@ test_result.jpg
 # === Cache ===
 *.cache
 .cache/
+
+# Web files (local only)
+templates/
+static/
+app.py
+Dockerfile
